@@ -5,7 +5,7 @@ import time
 
 class FaceMeshDetector():
 
-    def __init__(self, staticMode=False, maxFaces=1, refine = False, minDetectionCon=0.5, minTrackCon=0.5):
+    def __init__(self, staticMode=False, maxFaces=2, refine = False, minDetectionCon=0.5, minTrackCon=0.5):
 
         self.staticMode = staticMode
         self.maxFaces = maxFaces
@@ -36,7 +36,6 @@ class FaceMeshDetector():
 
 
 def main():
-    # cap = cv2.VideoCapture("Videos/1.mp4")
     cap = cv2.VideoCapture(0)
     if not cap.isOpened():
         print( "No camera found or error opening camera; using a static image instead." )
