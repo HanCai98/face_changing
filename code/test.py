@@ -1,10 +1,32 @@
 import numpy as np
 import skimage.io as io
+import cv2
 import matplotlib.pyplot as plt
+import json 
 
 
-print(np.array([1,2,3]))
+# print(np.array([1,2,3]))
 
-img = io.imread('/Users/mike/Desktop/Computer Vision/cs1430_projects/face_changing/masks/1.png')
-plt.imshow(img)
-plt.show()
+img = io.imread('../masks/mask_1.png')
+# print(img.shape)
+# plt.imshow(img)
+# plt.show()
+
+# extract the mask
+file = open('../conf/mask_1_indices.json')
+mask_1_indices = json.load(file)
+
+dest = []
+for key, value in mask_1_indices.items():
+    print(key, value)
+    dest.append(value)
+dest = np.array(dest)
+print(dest.shape)
+
+
+# image = cv2.imread('../masks/mask_1.png')
+# print(image.shape)
+# cv2.namedWindow("Image")
+# cv2.imshow("Image", image)
+# cv2.waitKey(0)
+# cv2.destroyAllWindows()
