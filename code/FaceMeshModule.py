@@ -23,7 +23,7 @@ class FaceMeshDetector():
         self.drawSpec = self.mpDraw.DrawingSpec(thickness=1, circle_radius=2)
 
     # if you want to draw the landmarks, set draw = True
-    def findFaceMesh(self, img, draw=True):
+    def findFaceMesh(self, img, draw=False):
         self.imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         self.results = self.faceMesh.process(self.imgRGB)
         face = []
@@ -43,6 +43,7 @@ class FaceMeshDetector():
                 indices = np.array([10, 152, 234, 454, 159, 145, 33, 133, 386, 374, 263, 362, 1, 13])
                 face = np.array(face)
                 dest = face[indices]
+                face = list(face)
                 dest = np.array(dest, dtype="float32")
                 
     
@@ -51,17 +52,29 @@ class FaceMeshDetector():
                 # mask_image = cv2.cvtColor(mask_image,cv2.COLOR_BGR2RGB)
                 file = open('../conf/mask_1_indices.json')
                 mask_1_indices = json.load(file)
-
+                
                 src = []
                 for key, value in mask_1_indices.items():
+                    value[1] += 20
                     src.append(value)
                 src = np.array(src, dtype="float32")
 
                 # get the perspective transformation matrix
                 h, mask = cv2.findHomography(src[0:5], dest[0:5], cv2.RANSAC,5.0)
+                # h, mask = cv2.findTransformECC(src[0:5], dest[0:5], cv2.RANSAC,5.0)
 
                 # transformed masked image
-                img  = cv2.warpPerspective(mask_image, h, (img.shape[1], img.shape[0]))
+                maskReg  = cv2.warpPerspective(mask_image, h, (img.shape[1], img.shape[0]))
+                output = np.zeros(img.shape, dtype=np.uint8)
+
+                flag_channel = maskReg[..., -1]
+                flag_channel = np.expand_dims(flag_channel, -1)
+                flag_channel = np.concatenate([flag_channel]*3, -1)
+                img = np.where(flag_channel, maskReg[..., :-1], img)
+                # maskReg = cv2.cvtColor(maskReg, cv2.COLOR_BGRA2BGR) 
+                # img =  cv2.bitwise_and(maskReg, img)       
+
+                
 
                 
                 # img = cv2.warpPerspective(mask_image, h,(img.shape[1], img.shape[0]), None, cv2.INTER_LINEAR,cv2.BORDER_CONSTANT)

@@ -8,20 +8,22 @@ import json
 # print(np.array([1,2,3]))
 
 img = io.imread('../masks/mask_1.png')
-# print(img.shape)
-# plt.imshow(img)
-# plt.show()
+print(img.shape)
 
-# extract the mask
-file = open('../conf/mask_1_indices.json')
-mask_1_indices = json.load(file)
+# img = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
+plt.imshow(img)
+plt.show()
 
-dest = []
-for key, value in mask_1_indices.items():
-    print(key, value)
-    dest.append(value)
-dest = np.array(dest)
-print(dest.shape)
+# # extract the mask
+# file = open('../conf/mask_1_indices.json')
+# mask_1_indices = json.load(file)
+
+# dest = []
+# for key, value in mask_1_indices.items():
+#     print(key, value)
+#     dest.append(value)
+# dest = np.array(dest)
+# print(dest.shape)
 
 
 # image = cv2.imread('../masks/mask_1.png')
