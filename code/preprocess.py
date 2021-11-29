@@ -13,10 +13,10 @@ def preprocess(face, mask, mask_indices):
     # put the label indices of mask in the src[]
     mask_image = cv2.imread(mask, cv2. IMREAD_UNCHANGED)
     file = open(mask_indices)
-    mask_1_indices = json.load(file)
+    mask_indices = json.load(file)
     
     src = []
-    for key, value in mask_1_indices.items():
+    for key, value in mask_indices.items():
         src.append(value)
     src = np.array(src, dtype="float32")
     
