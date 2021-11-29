@@ -27,7 +27,7 @@ def main():
         cv2.waitKey(1)
 
         # press 'Esc' to stop
-        if cv2.waitKey(1) == 27:
+        if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
     cap.release()
