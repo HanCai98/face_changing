@@ -10,7 +10,7 @@ def transform(face, img, mask, mask_indices):
     # get the perspective transformation matrix
     # h, mask = cv2.findHomography(src[0:5], dest[0:5], cv2.RANSAC,5.0)
     transformer = tf.AffineTransform()
-    transformer.estimate(dest[:5], src[:5])
+    transformer.estimate(dest[:4], src[:4])
     
     # transformed masked image
     # maskReg  = cv2.warpPerspective(mask_image, h, (img.shape[1], img.shape[0]))

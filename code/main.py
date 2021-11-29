@@ -39,10 +39,10 @@ def main():
             img = transform(face, img, '../masks/' + mask, '../conf/' + mask_indices)
             change_mask = True
         else:
-            if number < 2 and change_mask:
+            if number < 14 and change_mask:
                 number += 1
                 change_mask = False
-            elif number >= 2 and change_mask:
+            elif number >= 14 and change_mask:
                 number = 0
                 change_mask = False
 
