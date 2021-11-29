@@ -1,9 +1,5 @@
-import cv2
 import mediapipe as mp
-import time
-import json
-import numpy as np
-import skimage.io as io
+import cv2
 
 
 class FaceMeshDetector():
@@ -22,94 +18,25 @@ class FaceMeshDetector():
                                                  self.minDetectionCon, self.minTrackCon)
         self.drawSpec = self.mpDraw.DrawingSpec(thickness=1, circle_radius=2)
 
-    # if you want to draw the landmarks, set draw = True
+    
     def findFaceMesh(self, img, draw=False):
         self.imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         self.results = self.faceMesh.process(self.imgRGB)
         face = []
         if self.results.multi_face_landmarks:
             for faceLms in self.results.multi_face_landmarks:
-                # draw landmarks 
+                # if you want to draw the landmarks, set draw = True 
                 if draw:
                     self.mpDraw.draw_landmarks(img, faceLms, self.mpFaceMesh.FACEMESH_CONTOURS,
                                            self.drawSpec, self.drawSpec)
                 
-                for id,lm in enumerate(faceLms.landmark):
+                for lm in faceLms.landmark:
                     ih, iw, ic = img.shape
                     x,y = float(lm.x*iw), float(lm.y*ih)
                     face.append([x,y])
-
-                                          
-                indices = np.array([10, 152, 234, 454, 159, 145, 33, 133, 386, 374, 263, 362, 1, 13])
-                face = np.array(face)
-                dest = face[indices]
-                face = list(face)
-                dest = np.array(dest, dtype="float32")
-                
-    
-                # put the label indices of mask in the src[]
-                mask_image = cv2.imread('../masks/mask_1.png', cv2. IMREAD_UNCHANGED)
-                # mask_image = cv2.cvtColor(mask_image,cv2.COLOR_BGR2RGB)
-                file = open('../conf/mask_1_indices.json')
-                mask_1_indices = json.load(file)
-                
-                src = []
-                for key, value in mask_1_indices.items():
-                    value[1] += 20
-                    src.append(value)
-                src = np.array(src, dtype="float32")
-
-                # get the perspective transformation matrix
-                h, mask = cv2.findHomography(src[0:5], dest[0:5], cv2.RANSAC,5.0)
-                # h, mask = cv2.findTransformECC(src[0:5], dest[0:5], cv2.RANSAC,5.0)
-
-                # transformed masked image
-                maskReg  = cv2.warpPerspective(mask_image, h, (img.shape[1], img.shape[0]))
-                output = np.zeros(img.shape, dtype=np.uint8)
-
-                flag_channel = maskReg[..., -1]
-                flag_channel = np.expand_dims(flag_channel, -1)
-                flag_channel = np.concatenate([flag_channel]*3, -1)
-                img = np.where(flag_channel, maskReg[..., :-1], img)
-                # maskReg = cv2.cvtColor(maskReg, cv2.COLOR_BGRA2BGR) 
-                # img =  cv2.bitwise_and(maskReg, img)       
-
-                
-
-                
-                # img = cv2.warpPerspective(mask_image, h,(img.shape[1], img.shape[0]), None, cv2.INTER_LINEAR,cv2.BORDER_CONSTANT)
-                # print(transformed_mask.shape) # (720, 1280, 3)
-
 
         cv2.destroyAllWindows()
         return img, face
     
 
 
-def main():
-    cap = cv2.VideoCapture(0)
-    if not cap.isOpened():
-        print( "No camera found or error opening camera; using a static image instead." )
-
-    pTime = 0
-    detector = FaceMeshDetector()
-    while True:
-        success, img = cap.read()
-        img, face = detector.findFaceMesh(img)
-
-        if len(face) != 0:
-            print(len(face))
-        else:
-            print("face losing")
-        cTime = time.time()
-        fps = 1 / (cTime - pTime)
-        pTime = cTime
-        cv2.putText(img, f'FPS: {int(fps)}', (20, 70), cv2.FONT_HERSHEY_PLAIN,
-                    3, (0, 255, 0), 3)
-        cv2.imshow("Image", img)
-        cv2.waitKey(1)
-
-    # cap.release()
-
-if __name__ == "__main__":
-    main()
