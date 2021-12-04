@@ -10,7 +10,7 @@ from transformation import transform
 def main():
     cap = cv2.VideoCapture(0)
     if not cap.isOpened():
-        print( "No camera found or error opening camera; using a static image instead." )
+        print("No camera found or error opening camera; using a static image instead.")
     
     # store all the mask files name and label files name
     labels_path = '../conf'
@@ -28,6 +28,11 @@ def main():
     pTime = 0
     detector = FaceMeshDetector()
     while True:
+
+        # press 'Esc' to stop
+        if cv2.waitKey(1) == 27:
+            break
+
         success, img = cap.read()
         img, face = detector.findFaceMesh(img)
 
@@ -53,9 +58,9 @@ def main():
         cv2.imshow("Image", img)
         cv2.waitKey(1)
 
-        # press 'Esc' to stop
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
+        # # press 'Esc' to stop
+        # if cv2.waitKey(1) == 27:
+        #     break
 
     cap.release()
     cv2.destroyAllWindows()
